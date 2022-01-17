@@ -20,20 +20,17 @@
 	    {% include "sidebar.html" %}
       {% endblock %}
       <div id="content">
-        <div>
-            <h1>Список существующих категорий</h1>
-            {% for item in objects_list %}
-            <li>
-                {{item.name}} <span>Количество продуктов: {{item.product_count()}}</span>
-                <a href="/product-list/?id={{item.id}}">Показать продукты</a>
-            </li>
-            {% endfor %}
-        </div>
-
-        <div>
-            <h1>Ссылки</h1>
-            <li><a href="/examples/">Создать категорию</a></li>
-        </div>
+            <div>
+                <br>
+                <a href="/create-product/?id={{id}}">Добавить продукт</a>
+                <br>
+                <h1>Список продуктов для категории "{{name}}"</h1>
+                {% for item in objects_list %}
+                <li>
+                    {{item.name}}
+                </li>
+                {% endfor %}
+            </div>
       </div>
     </div>
     <div id="footer">
