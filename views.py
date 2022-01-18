@@ -104,3 +104,25 @@ class CategoryList:
                                 objects_list=site.categories)
 
 
+# контроллер - копировать курс
+class CopyProduct:
+    def __call__(self, request):
+        request_params = request['request_params']
+
+        try:
+            name = request_params['name']
+
+            old_product = site.get_product(name)
+            if old_product:
+                new_name = f'copy_{name}'
+                new_product = old_product.clone()
+                new_product.name = new_name
+                site.product.append(new_product)
+
+            return '200 OK', render('product_list.html',
+                                    objects_list=site.product,
+                                    name=new_product.category.name)
+        except KeyError:
+            return '200 OK', 'No courses have been added yet'
+
+
