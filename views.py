@@ -1,25 +1,36 @@
 from framework.templator import render
 from patterns.сreational_patterns import Engine
+from patterns.structural_patterns import AppRoute, Debug
+
 
 site = Engine()
 
+routes = {}
 
+
+@AppRoute(routes=routes, url='/')
 class Index:
+    @Debug(name='Index')
     def __call__(self, request):
         return '200 OK', render('index.html', date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/contacts/')
 class Contact:
+    @Debug(name='Contact')
     def __call__(self, request):
         return '200 OK', render('contact.html', date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/admin/')
 class Admin:
+    @Debug(name='Admin')
     def __call__(self, request):
         return '200 OK', render('admin.html', date=request.get('date', None))
 
 
 # контроллер - список продуктов
+@AppRoute(routes=routes, url='/product_list/')
 class ProductList:
     def __call__(self, request):
         try:
@@ -33,6 +44,7 @@ class ProductList:
 
 
 # контроллер - создать продукт
+@AppRoute(routes=routes, url='/product-list/')
 class CreateProduct:
     category_id = -1
 
@@ -69,6 +81,7 @@ class CreateProduct:
 
 
 # контроллер - создать категорию
+@AppRoute(routes=routes, url='/examples/')
 class CreateCategory:
     def __call__(self, request):
 
@@ -98,6 +111,7 @@ class CreateCategory:
 
 
 # контроллер - список категорий
+@AppRoute(routes=routes, url='/products/')
 class CategoryList:
     def __call__(self, request):
         return '200 OK', render('product.html',
@@ -105,6 +119,7 @@ class CategoryList:
 
 
 # контроллер - копировать курс
+@AppRoute(routes=routes, url='/copy-product/')
 class CopyProduct:
     def __call__(self, request):
         request_params = request['request_params']
