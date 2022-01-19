@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>black_pink_white - a page</title>
+  <meta name="description" content="website description" />
+  <meta name="keywords" content="website keywords, website keywords" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  {% block style %}
+    {% include "style.html" %}
+  {% endblock %}
+</head>
+
+<body>
+    {% block menu %}
+	    {% include "menu.html" %}
+    {% endblock %}
+    <div id="site_content">
+      {% block sidebar %}
+	    {% include "sidebar.html" %}
+      {% endblock %}
+      <div id="content">
+            <div>
+                <br>
+                <a href="/create-product/?id={{id}}">Добавить продукт</a>
+                <br>
+                <h1>Список продуктов для категории "{{name}}"</h1>
+                {% for item in objects_list %}
+                <li>
+                    {{item.name}} <span><a href="/copy-product/?name={{item.name}}">скопировать</a></span>
+                </li>
+                {% endfor %}
+            </div>
+      </div>
+    </div>
+    <div id="footer">
+      Copyright &copy; black_pink_white | <a href="http://validator.w3.org/check?uri=referer">HTML5</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> | free from html5webtemplates.co.uk
+    </div>
+</body>
+</html>
