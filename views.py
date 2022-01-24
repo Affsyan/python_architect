@@ -1,11 +1,15 @@
 from framework.templator import render
-from patterns.сreational_patterns import Engine
+from patterns.сreational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
-
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
+    ListView, CreateView, BaseSerializer
 
 site = Engine()
+logger = Logger('main')
 
 routes = {}
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
 
 
 @AppRoute(routes=routes, url='/')
@@ -22,17 +26,11 @@ class Contact:
         return '200 OK', render('contact.html', date=request.get('date', None))
 
 
-@AppRoute(routes=routes, url='/admin/')
-class Admin:
-    @Debug(name='Admin')
-    def __call__(self, request):
-        return '200 OK', render('admin.html', date=request.get('date', None))
-
-
 # контроллер - список продуктов
 @AppRoute(routes=routes, url='/product_list/')
 class ProductList:
     def __call__(self, request):
+        logger.log('Список продуктов')
         try:
             category = site.find_category_by_id(
                 int(request['request_params']['id']))
@@ -60,8 +58,12 @@ class CreateProduct:
             if self.category_id != -1:
                 category = site.find_category_by_id(int(self.category_id))
 
-                course = site.create_product('milk', name, category)
-                site.product.append(course)
+                product = site.create_product('milk', name, category)
+
+                product.observers.append(email_notifier)
+                product.observers.append(sms_notifier)
+
+                site.product.append(product)
 
             return '200 OK', render('product_list.html',
                                     objects_list=category.product,
@@ -140,4 +142,47 @@ class CopyProduct:
         except KeyError:
             return '200 OK', 'No courses have been added yet'
 
+
+@AppRoute(routes=routes, url='/customer-list/')
+class CustomerListView(ListView):
+    queryset = site.customer
+    template_name = 'customer_list.html'
+
+
+@AppRoute(routes=routes, url='/admin/')
+class CustomerCreateView(CreateView):
+    template_name = 'admin.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('customer', name)
+        site.customer.append(new_obj)
+
+
+@AppRoute(routes=routes, url='/add-product/')
+class AddCustomerByProductCreateView(CreateView):
+    template_name = 'add_product.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['product'] = site.product
+        context['customer'] = site.customer
+        return context
+
+    def create_obj(self, data: dict):
+        product_name = data['product_name']
+        product_name = site.decode_value(product_name)
+        product = site.get_product(product_name)
+        customer_name = data['customer_name']
+        customer_name = site.decode_value(customer_name)
+        customer = site.get_customer(customer_name)
+        product.add_customer(customer)
+
+
+@AppRoute(routes=routes, url='/api/')
+class CourseApi:
+    @Debug(name='CourseApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.product).save()
 

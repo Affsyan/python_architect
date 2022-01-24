@@ -19,20 +19,30 @@
     {% block sidebar %}
 	    {% include "sidebar.html" %}
     {% endblock %}
-
-        <div>
-            <br>
-            <li>
-                <a href="/customer-list/">Список пользователей</a>
-            </li>
-        </div>
-        <div>
-            <h1>Создание покупателя</h1>
-            <form method="post">
-                <input type="text" name="name" placeholder="Имя">
-                <button type="submit">Сохранить</button>
-            </form>
-        </div>
+	<div>
+        <br>
+		<li>
+			<a href="/customer-list/">Список пользователей</a>
+		</li>
+        <br>
+		<li>
+			<a href="/admin/">Создать пользователя</a>
+		</li>
+	</div>
+    <h1>Добавление продукта пользователю</h1>
+    <form method="post">
+        <select size="3" name="product_name">
+            {% for item in product %}
+            <option value="{{item.name}}">{{item.name}}</option>
+            {% endfor %}
+        </select>
+        <select size="3" name="customer_name">
+            {% for item in customer %}
+            <option value="{{item.name}}">{{item.name}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Добавить</button>
+    </form>
     <div id="footer">
       Copyright &copy; black_pink_white | <a href="http://validator.w3.org/check?uri=referer">HTML5</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> | free from html5webtemplates.co.uk
     </div>
